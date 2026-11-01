@@ -1,6 +1,5 @@
 # The demo on GitHub Pages: the page drawn from an invented snapshot
-# (demo/main.go), published from main. GitHub Pages serves a private
-# repository only on a paid plan, so until this one is public it waits.
+# (demo/main.go), published from main.
 name: Demo
 
 on:
@@ -18,7 +17,6 @@ concurrency:
 
 jobs:
   build:
-    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

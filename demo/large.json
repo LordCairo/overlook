@@ -5743,12 +5743,12 @@
         },
         {
           "title": { "name": "Lena" },
-          "value": { "key": "jellyfin.episode", "args": { "series": "The Allotment", "name": "First Frost" } },
+          "value": { "key": "mediabrowser.episode", "args": { "series": "The Allotment", "name": "First Frost" } },
           "detail": { "key": "mediaserver.transcoding", "args": { "device": "Phone" } }
         },
         {
           "title": { "name": "Mia" },
-          "value": { "key": "jellyfin.episode", "args": { "series": "Harbour Lights", "name": "The Lamp Room" } },
+          "value": { "key": "mediabrowser.episode", "args": { "series": "Harbour Lights", "name": "The Lamp Room" } },
           "detail": { "key": "mediaserver.direct", "args": { "device": "Living room TV" } }
         },
         {
@@ -5762,16 +5762,16 @@
           "value": { "name": "Big Buck Bunny (2008)" },
           "detail": { "key": "mediaserver.transcoding", "args": { "device": "Kids' tablet" } }
         },
-        { "title": { "key": "jellyfin.films" }, "value": { "key": "jellyfin.films_n", "args": { "n": 2318 } } },
+        { "title": { "key": "mediabrowser.films" }, "value": { "key": "mediabrowser.films_n", "args": { "n": 2318 } } },
         {
-          "title": { "key": "jellyfin.shows" },
-          "value": { "key": "jellyfin.shows_n", "args": { "n": 164, "episodes": 9472 } }
+          "title": { "key": "mediabrowser.shows" },
+          "value": { "key": "mediabrowser.shows_n", "args": { "n": 164, "episodes": 9472 } }
         },
         {
-          "title": { "key": "jellyfin.music" },
-          "value": { "key": "jellyfin.music_n", "args": { "n": 1083, "songs": 14215 } }
+          "title": { "key": "mediabrowser.music" },
+          "value": { "key": "mediabrowser.music_n", "args": { "n": 1083, "songs": 14215 } }
         },
-        { "title": { "key": "jellyfin.books" }, "value": { "key": "jellyfin.books_n", "args": { "n": 386 } } },
+        { "title": { "key": "mediabrowser.books" }, "value": { "key": "mediabrowser.books_n", "args": { "n": 386 } } },
         {
           "title": { "name": "/mnt/films" },
           "value": { "key": "jellyfin.free", "args": { "n": 3600000000000 } },
@@ -5788,20 +5788,20 @@
           "meter": { "used": 1530000000000, "total": 4000000000000 }
         },
         {
-          "title": { "key": "jellyfin.failed_logins" },
-          "value": { "key": "jellyfin.failed_logins_n", "args": { "n": 4 } },
+          "title": { "key": "mediabrowser.failed_logins" },
+          "value": { "key": "mediabrowser.failed_logins_n", "args": { "n": 4 } },
           "detail": { "name": "Failed login attempt from jo" },
           "tone": "orange"
         },
         {
           "title": { "name": "Extract Chapter Images" },
-          "value": { "key": "jellyfin.task_failed" },
+          "value": { "key": "mediabrowser.task_failed" },
           "detail": { "name": "ffmpeg exited with code 234" },
           "tone": "red"
         },
         {
-          "title": { "key": "jellyfin.version" },
-          "value": { "key": "jellyfin.restart" },
+          "title": { "key": "mediabrowser.version" },
+          "value": { "key": "mediabrowser.restart" },
           "detail": { "name": "12.4.0" },
           "tone": "orange"
         }
