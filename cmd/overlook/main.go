@@ -16,7 +16,6 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"runtime/debug"
 	"syscall"
 	"time"
 
@@ -26,6 +25,7 @@ import (
 
 	"github.com/bnlqn/overlook/internal/config"
 	"github.com/bnlqn/overlook/internal/server"
+	"github.com/bnlqn/overlook/internal/snapshot"
 )
 
 func main() {
@@ -62,9 +62,7 @@ func run() error {
 	defer stop()
 	served := make(chan error, 1)
 	go func() { served <- srv.ListenAndServe() }()
-	// The version is the tag the binary was built at, which Go records.
-	info, _ := debug.ReadBuildInfo()
-	slog.Info("overlook is serving", "version", info.Main.Version, "address", *listen, "sources", len(c.Readers()))
+	slog.Info("overlook is serving", "version", snapshot.Version, "address", *listen, "sources", len(c.Readers()))
 	select {
 	case err := <-served:
 		return err

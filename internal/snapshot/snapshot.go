@@ -21,9 +21,9 @@ const (
 	timeout = 10 * time.Second
 )
 
-// version is the Overlook reading, as the tag it was built at without its v,
+// Version is the Overlook reading, as the tag it was built at without its v,
 // such as 0.2.0, which Go records; none when Go records none, as with go run.
-var version = func() string {
+var Version = func() string {
 	info, ok := debug.ReadBuildInfo()
 	if !ok || info.Main.Version == "(devel)" {
 		return ""
@@ -123,7 +123,7 @@ func (r *Reader) Snapshot() Snapshot {
 		Parts:   Parts{Checks: []Check{}, Sections: []Section{}, Charts: []Chart{}, Figures: []Figure{}, Events: []Event{}, Updates: []Update{}, Chores: []Chore{}},
 		Apps:    append([]Link{}, r.apps...),
 		Tools:   append([]Link{}, r.tools...),
-		Version: version,
+		Version: Version,
 	}
 	for i, src := range r.sources {
 		state := SourceState{Name: src.Name, Adapter: src.Adapter, Area: src.Area, Kind: src.Kind, Answered: errs[i] == nil}

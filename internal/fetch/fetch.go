@@ -7,7 +7,6 @@ package fetch
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -50,13 +49,6 @@ func sameOrigin(req *http.Request, via []*http.Request) error {
 	}
 	if from := via[0].URL; req.URL.Scheme != from.Scheme || !strings.EqualFold(req.URL.Host, from.Host) {
 		return errors.New("a redirect to another scheme, host or port refused")
-	}
-	return nil
-}
-
-func decode(body []byte, v any) error {
-	if err := json.Unmarshal(body, v); err != nil {
-		return fmt.Errorf("an answer that isn't the JSON expected: %w", err)
 	}
 	return nil
 }

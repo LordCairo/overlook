@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -100,7 +101,10 @@ func (s Source) JSON(ctx context.Context, path string, v any) error {
 	if err != nil {
 		return err
 	}
-	return decode(body, v)
+	if err := json.Unmarshal(body, v); err != nil {
+		return fmt.Errorf("an answer that isn't the JSON expected: %w", err)
+	}
+	return nil
 }
 
 // Text reads the answer at path as it is, as JSON reads one, asking for

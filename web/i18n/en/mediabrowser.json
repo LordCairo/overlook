@@ -1,0 +1,20 @@
+{
+  "mediabrowser.episode": "{series}: {name}",
+
+  "mediabrowser.films": "Films",
+  "mediabrowser.films_n": { "one": "{n} film", "other": "{n} films" },
+  "mediabrowser.shows": "Shows",
+  "mediabrowser.shows_n": { "one": "{n} show · {episodes} episodes", "other": "{n} shows · {episodes} episodes" },
+  "mediabrowser.music": "Music",
+  "mediabrowser.music_n": { "one": "{n} album · {songs} songs", "other": "{n} albums · {songs} songs" },
+  "mediabrowser.books": "Books",
+  "mediabrowser.books_n": { "one": "{n} book", "other": "{n} books" },
+
+  "mediabrowser.failed_logins": "Failed logins",
+  "mediabrowser.failed_logins_n": { "one": "{n} in the last day", "other": "{n} in the last day" },
+  "mediabrowser.task_failed": "Failed",
+  "mediabrowser.task_failed_at": "Last run {at:when}",
+
+  "mediabrowser.version": "Version",
+  "mediabrowser.restart": "Restart pending"
+}

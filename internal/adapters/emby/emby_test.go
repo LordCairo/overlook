@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bnlqn/overlook/internal/adapters/adaptertest"
+	"github.com/bnlqn/overlook/internal/adapters/mediabrowser"
 )
 
 // testdata holds answers recorded from a scratch Emby 4.10 (ADR 0008),
@@ -19,7 +20,7 @@ import (
 func TestRead(t *testing.T) {
 	t.Parallel()
 	src := adaptertest.Replay(t, "testdata")
-	c := Config{URL: src.URL, Key: "0123abcd"}
+	c := Config{Config: mediabrowser.Config{URL: src.URL, Key: "0123abcd"}}
 	if err := c.Check(); err != nil {
 		t.Fatal(err)
 	}
@@ -44,23 +45,23 @@ func TestRead(t *testing.T) {
 	if r := rows[1]; r.Title.Name != "Robin" || r.Detail.Key != "mediaserver.transcoding" {
 		t.Errorf("Robin's film, transcoded: %+v %+v", r, r.Detail)
 	}
-	if r := rows[2]; r.Title.Name != "Sam" || r.Value.Key != "emby.episode" || r.Value.Args["series"] != "Harbour Lights" || r.Detail.Key != "mediaserver.paused" {
+	if r := rows[2]; r.Title.Name != "Sam" || r.Value.Key != "mediabrowser.episode" || r.Value.Args["series"] != "Harbour Lights" || r.Detail.Key != "mediaserver.paused" {
 		t.Errorf("Sam's episode, paused: %+v %+v", r, r.Value)
 	}
-	if r := rows[3]; r.Title.Key != "emby.films" || r.Value.Args["n"] != 8 {
+	if r := rows[3]; r.Title.Key != "mediabrowser.films" || r.Value.Args["n"] != 8 {
 		t.Errorf("8 films: %+v", r.Value)
 	}
-	if r := rows[4]; r.Title.Key != "emby.shows" || r.Value.Args["n"] != 2 || r.Value.Args["episodes"] != 10 {
+	if r := rows[4]; r.Title.Key != "mediabrowser.shows" || r.Value.Args["n"] != 2 || r.Value.Args["episodes"] != 10 {
 		t.Errorf("2 shows of 10 episodes, and no music or books: %+v", r.Value)
 	}
-	if r := rows[5]; r.Title.Key != "emby.failed_logins" || r.Value.Args["n"] != 2 || r.Tone != "orange" ||
+	if r := rows[5]; r.Title.Key != "mediabrowser.failed_logins" || r.Value.Args["n"] != 2 || r.Tone != "orange" ||
 		r.Detail.Name != "Failed Login Attempt from Robin on 3212bdb3a9e5" {
 		t.Errorf("Robin's two failed logins, as Emby words them, naming the server: %+v", r)
 	}
 	if r := rows[6]; r.Title.Name != "Scan media library" || r.Tone != "red" || !strings.Contains(r.Detail.Name, "denied") {
 		t.Errorf("the failed scan, with why: %+v", r)
 	}
-	if r := rows[7]; r.Title.Key != "emby.version" || r.Value.Key != "emby.restart" || r.Tone != "orange" || r.Detail.Name != "4.10.2.0" {
+	if r := rows[7]; r.Title.Key != "mediabrowser.version" || r.Value.Key != "mediabrowser.restart" || r.Tone != "orange" || r.Detail.Name != "4.10.2.0" {
 		t.Errorf("a restart pending, with the version: %+v", r)
 	}
 
@@ -76,7 +77,7 @@ func TestRead(t *testing.T) {
 func TestNoRestartPending(t *testing.T) {
 	t.Parallel()
 	src := adaptertest.Replay(t, "testdata", `"HasPendingRestart": true`, `"HasPendingRestart": false`)
-	c := Config{URL: src.URL, Key: "0123abcd"}
+	c := Config{Config: mediabrowser.Config{URL: src.URL, Key: "0123abcd"}}
 	if err := c.Check(); err != nil {
 		t.Fatal(err)
 	}
@@ -87,25 +88,5 @@ func TestNoRestartPending(t *testing.T) {
 	rows := p.Sections[0].Rows
 	if r := rows[len(rows)-1]; r.Value.Name != "4.10.2.0" || r.Tone != "" {
 		t.Errorf("the version alone: %+v", r)
-	}
-}
-
-func TestConfigCheck(t *testing.T) {
-	t.Parallel()
-	c := Config{URL: "http://emby:8096", Key: "0123abcd"}
-	if err := c.Check(); err != nil || c.Name != "Emby" {
-		t.Errorf("defaults: %+v, %v", c, err)
-	}
-	for _, bad := range []struct {
-		c    Config
-		want string
-	}{
-		{Config{Key: "0123abcd"}, "url is missing"},
-		{Config{URL: "emby:8096", Key: "0123abcd"}, "url needs"},
-		{Config{URL: "http://emby:8096"}, "key is missing"},
-	} {
-		if err := bad.c.Check(); err == nil || !strings.Contains(err.Error(), bad.want) {
-			t.Errorf("%+v: want an error with %q, got %v", bad.c, bad.want, err)
-		}
 	}
 }

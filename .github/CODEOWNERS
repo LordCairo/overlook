@@ -1,53 +1,6 @@
-# Who reviews what (ADR 0005): the maintainer owns everything, and each
-# adapter's author owns its folder and its English words, listed below.
+# Who reviews what (ADR 0005): the maintainer owns everything, and the author
+# of an adapter the maintainer didn't write owns its folder and its English
+# words, listed below. The last line that matches a file decides.
 *                           @bnlqn
 
-/internal/adapters/adguard/ @bnlqn
-/internal/adapters/beszel/  @bnlqn
-/internal/adapters/checkmate/ @bnlqn
-/internal/adapters/docker/  @bnlqn
 /internal/adapters/emby/    @linkinxp
-/internal/adapters/gatus/   @bnlqn
-/internal/adapters/github/  @bnlqn
-/internal/adapters/grafana/ @bnlqn
-/internal/adapters/homeassistant/ @bnlqn
-/internal/adapters/ical/    @bnlqn
-/internal/adapters/immich/  @bnlqn
-/internal/adapters/jellyfin/ @bnlqn
-/internal/adapters/nextcloud/ @bnlqn
-/internal/adapters/pbs/     @bnlqn
-/internal/adapters/pihole/  @bnlqn
-/internal/adapters/prometheus/ @bnlqn
-/internal/adapters/prowlarr/ @bnlqn
-/internal/adapters/proxmox/ @bnlqn
-/internal/adapters/qbittorrent/ @bnlqn
-/internal/adapters/radarr/  @bnlqn
-/internal/adapters/seerr/   @bnlqn
-/internal/adapters/servarr/ @bnlqn
-/internal/adapters/sonarr/  @bnlqn
-/internal/adapters/tautulli/ @bnlqn
-/internal/adapters/unifi/    @bnlqn
-/internal/adapters/uptimekuma/ @bnlqn
-/web/i18n/en/adguard.json   @bnlqn
-/web/i18n/en/beszel.json    @bnlqn
-/web/i18n/en/docker.json    @bnlqn
-/web/i18n/en/emby.json      @linkinxp
-/web/i18n/en/homeassistant.json @bnlqn
-/web/i18n/en/immich.json    @bnlqn
-/web/i18n/en/jellyfin.json  @bnlqn
-/web/i18n/en/nextcloud.json @bnlqn
-/web/i18n/en/pbs.json       @bnlqn
-/web/i18n/en/pihole.json    @bnlqn
-/web/i18n/en/prowlarr.json  @bnlqn
-/web/i18n/en/proxmox.json   @bnlqn
-/web/i18n/en/qbittorrent.json @bnlqn
-/web/i18n/en/radarr.json    @bnlqn
-/web/i18n/en/seerr.json     @bnlqn
-/web/i18n/en/servarr.json   @bnlqn
-/web/i18n/en/sonarr.json    @bnlqn
-/web/i18n/en/tautulli.json  @bnlqn
-/web/i18n/en/unifi.json     @bnlqn
-/internal/adapters/nut/     @bnlqn
-/internal/adapters/paperless/ @bnlqn
-/web/i18n/en/nut.json       @bnlqn
-/web/i18n/en/paperless.json @bnlqn
