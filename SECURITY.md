@@ -16,8 +16,8 @@ While there is no config, Overlook serves the setup page in place of the page (A
 From v0.2.0 on, GitHub attests every release: a signed record that the binaries and the image were built from this repository by its release workflow, and from which commit. Before you give Overlook your keys, check what you run:
 
 ```bash
-gh attestation verify overlook_0.4.0_linux_amd64.tar.gz --repo bnlqn/overlook
-gh attestation verify oci://ghcr.io/bnlqn/overlook:0.4.0 --repo bnlqn/overlook
+gh attestation verify overlook_0.5.0_linux_amd64.tar.gz --repo bnlqn/overlook
+gh attestation verify oci://ghcr.io/bnlqn/overlook:0.5.0 --repo bnlqn/overlook
 ```
 
 Each archive also comes with an SBOM, its name followed by `.sbom.json`, which lists everything built into the binary.
