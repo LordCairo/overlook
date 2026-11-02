@@ -64,13 +64,28 @@ type entity struct {
 	State       string    `json:"state"`
 	LastChanged time.Time `json:"last_changed"`
 	Attributes  struct {
-		Name             string     `json:"friendly_name"`
-		DeviceClass      string     `json:"device_class"`
-		Unit             string     `json:"unit_of_measurement"`
-		LastTriggered    *time.Time `json:"last_triggered"`
-		InstalledVersion string     `json:"installed_version"`
-		LatestVersion    string     `json:"latest_version"`
+		Name             string `json:"friendly_name"`
+		DeviceClass      string `json:"device_class"`
+		Unit             string `json:"unit_of_measurement"`
+		LastTriggered    stamp  `json:"last_triggered"`
+		InstalledVersion string `json:"installed_version"`
+		LatestVersion    string `json:"latest_version"`
 	} `json:"attributes"`
+}
+
+// stamp is a time in an attribute. Home Assistant writes its own in RFC
+// 3339, but passes on what an integration wrote under the same name as it
+// is, such as 2026-03-16 16:24:44 for an alarm panel's last trigger. A
+// stamp that isn't RFC 3339 is no time rather than an answer Overlook can't
+// read, since it reads only an automation's, which Home Assistant writes
+// itself.
+type stamp struct{ time.Time }
+
+func (s *stamp) UnmarshalJSON(b []byte) error {
+	if s.Time.UnmarshalJSON(b) != nil {
+		s.Time = time.Time{}
+	}
+	return nil
 }
 
 func (e entity) domain() string { d, _, _ := strings.Cut(e.ID, "."); return d }
@@ -105,7 +120,7 @@ func Read(ctx context.Context, c Config, now time.Time) (snapshot.Parts, error) 
 				broken = append(broken, e)
 			case e.State == "off":
 				off++
-			case e.Attributes.LastTriggered != nil && !e.Attributes.LastTriggered.Before(midnight):
+			case !e.Attributes.LastTriggered.Before(midnight):
 				ran++
 			}
 		case e.State == "unavailable":

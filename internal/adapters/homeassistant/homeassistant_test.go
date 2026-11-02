@@ -15,7 +15,9 @@ import (
 // broken, 31 entities that dropped off, and four updates waiting. The people
 // and where they are were left out, and the attributes the adapter doesn't
 // read, but for a few that give each kind its shape. Two batteries were
-// nudged below 20%, since the house had none that day.
+// nudged below 20%, since the house had none that day. An alarm panel was
+// added, whose integration writes its last_triggered with a space for the
+// T, as one owner's does (#102).
 func TestRead(t *testing.T) {
 	t.Parallel()
 	src := adaptertest.Replay(t, "testdata")
