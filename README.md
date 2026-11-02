@@ -182,7 +182,8 @@ repositories at the foot of the Docker page's Add Container, then pick
 Overlook as the template and apply it. Its config folder is
 `/mnt/user/appdata/overlook`, it runs locked down as above, and Unraid
 gives it `TZ` itself. Its WebUI opens the setup page, which says how to
-save the two files on Unraid.
+save the two files on Unraid. To link the Unraid server itself in the
+sidebar, as a tool, give it `icon: unraid.svg`, which Overlook ships.
 
 ## Configuring
 
