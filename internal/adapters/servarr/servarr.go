@@ -19,13 +19,13 @@ var Library = snapshot.Text{Key: "servarr.library"}
 
 // Config is one Radarr or Sonarr.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads it, such as http://radarr:7878.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text"`
 	// Key is its API key, from Settings, General. The key can do anything,
 	// and no lesser one exists; Overlook's GET-only reads keep it harmless
 	// (ADR 0001).
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key"`
 
 	source fetch.Source
 }

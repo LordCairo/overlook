@@ -19,13 +19,13 @@ import (
 
 // Config is one Gatus, under sources.gatus in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Gatus.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://gatus.example.com:8080"`
 	// User and Password are the login Overlook reads it with, if Gatus
 	// asks for one.
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user" setup:"text,optional"`
+	Password string `yaml:"password" setup:"key,optional"`
 	// Link is where the page sends the owner, if not URL.
 	Link string `yaml:"link"`
 	// Threshold is how many failures in a row make a problem: the same

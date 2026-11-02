@@ -31,21 +31,21 @@ const night = 6 * time.Hour
 // Config is one datastore of a Proxmox Backup Server, under sources.pbs in
 // overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads PBS, such as https://pbs.example.com:8007.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"https://pbs.example.com:8007"`
 	// Token is an API token's ID, as user@realm!name, and Secret its secret.
-	Token  string `yaml:"token"`
-	Secret string `yaml:"secret"`
+	Token  string `yaml:"token" setup:"text" example:"overlook@pbs!overlook"`
+	Secret string `yaml:"secret" setup:"key"`
 	// Datastore is the datastore whose backups are read.
-	Datastore string `yaml:"datastore"`
+	Datastore string `yaml:"datastore" setup:"text" example:"backups"`
 	// CA is a PEM file of the CA that signed PBS's certificate, or of the
 	// certificate itself, such as the server's
 	// /etc/proxmox-backup/proxy.pem, when the system doesn't trust it.
-	CA string `yaml:"ca"`
+	CA string `yaml:"ca" setup:"text,optional" example:"/etc/overlook/pbs.pem"`
 	// ServerName is the name PBS's certificate is for, when the URL reaches
 	// it by another, such as its address.
-	ServerName string `yaml:"server_name"`
+	ServerName string `yaml:"server_name" setup:"text,optional" example:"pbs.example.com"`
 
 	source fetch.Source
 }

@@ -2193,3 +2193,205 @@ main > :nth-child(n + 6) {
 .more > .chore {
   border-top: 1px solid var(--m-separator);
 }
+
+/* ── The setup page (ADR 0014) ──────────────────────────────────────────
+   In place of the page while there is no config: one column, and no
+   sidebar, since there are no areas yet. Each adapter opens to its fields. */
+body.setup {
+  display: block;
+}
+body.setup main {
+  max-width: 760px;
+}
+/* A group's hint goes under its title where both don't fit. */
+.setup .block-title {
+  flex-wrap: wrap;
+}
+.adapters {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.adapter > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--m-row-min);
+  padding: 0 14px 0 10px;
+  list-style: none;
+  cursor: pointer;
+  font: var(--m-type-headline);
+}
+.adapter > summary::-webkit-details-marker {
+  display: none;
+}
+.adapter > summary:hover {
+  background: var(--m-fill-hover);
+  border-radius: var(--m-radius-card);
+}
+.adapter > summary .caret {
+  color: var(--m-label-3);
+  transform: rotate(-90deg);
+  transition: transform 0.15s;
+}
+.adapter[open] > summary .caret {
+  transform: none;
+}
+.adapter > summary .n {
+  margin-left: auto;
+  font: var(--m-type-subhead);
+  color: var(--m-green-text);
+}
+.added {
+  margin: 0;
+  padding: 0 14px;
+  list-style: none;
+}
+.added li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  border-top: 1px solid var(--m-separator);
+}
+.added .where {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--m-label-2);
+}
+.added .icon-btn {
+  margin-left: auto;
+}
+.asks {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--m-separator);
+}
+.ask {
+  display: grid;
+  gap: 4px;
+}
+.ask > span {
+  font: var(--m-type-footnote-strong);
+  color: var(--m-label-2);
+}
+.ask i {
+  margin-left: 6px;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--m-label-3);
+}
+.ask input {
+  height: 32px;
+  min-width: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--m-fill-gray);
+  box-shadow: inset 0 0 0 0.5px var(--m-border);
+  color: var(--m-label);
+  font: var(--m-type-body);
+}
+.ask input::placeholder {
+  color: var(--m-label-3);
+}
+.asks-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 2px;
+}
+.asks-foot .action {
+  padding: 0 14px;
+}
+.action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.readme {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--m-type-footnote);
+  color: var(--m-label-2);
+  transition: color 0.15s;
+}
+.readme:hover {
+  color: var(--m-label);
+}
+.readme .ic {
+  width: 12px;
+  height: 12px;
+}
+.answer {
+  flex-basis: 100%;
+  margin: 0;
+  font: var(--m-type-footnote);
+  color: var(--m-label-2);
+  overflow-wrap: anywhere;
+}
+.answer:empty {
+  display: none;
+}
+.answer.good {
+  color: var(--m-green-text);
+}
+.answer.bad {
+  color: var(--m-red-text);
+}
+/* The error as Overlook got it, under what to do about it. */
+.answer .detail {
+  display: block;
+  margin-top: 2px;
+  color: var(--m-label-3);
+}
+.adapter > summary .app-icon {
+  margin-right: 2px;
+}
+.file {
+  margin-top: 8px;
+  overflow: hidden;
+}
+.file-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 8px 8px 14px;
+  border-bottom: 1px solid var(--m-separator);
+}
+.file-head code {
+  margin-right: auto;
+  font: 510 12px / 1 var(--m-mono);
+}
+.file-head .action {
+  height: 26px;
+  padding: 0 10px;
+}
+.file-note {
+  margin: 10px 14px 0;
+  font: var(--m-type-footnote);
+  color: var(--m-label-2);
+}
+.file pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font: 400 12px / 18px var(--m-mono);
+  color: var(--m-label-1);
+}
+.restart {
+  margin: 14px 0 0;
+  color: var(--m-label-2);
+}
+.restart.away {
+  color: var(--m-orange-text);
+}
+.restart code,
+.file-note code {
+  font: 12px var(--m-mono);
+  color: var(--m-label-1);
+}

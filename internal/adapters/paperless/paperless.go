@@ -23,12 +23,12 @@ const version = "10"
 
 // Config is one Paperless-ngx, under sources.paperless in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Paperless-ngx, such as
 	// http://paperless:8000.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://paperless.example.com:8000"`
 	// Token is the API token of a user of Overlook's own.
-	Token string `yaml:"token"`
+	Token string `yaml:"token" setup:"key"`
 
 	source fetch.Source
 }

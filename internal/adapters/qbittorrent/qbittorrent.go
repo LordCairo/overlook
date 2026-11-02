@@ -20,17 +20,17 @@ const Area = "apps"
 
 // Config is one qBittorrent, under sources.qbittorrent in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads qBittorrent's web UI, such as
 	// http://qbittorrent:8080.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://qbittorrent.example.com:8080"`
 	// Key is an API key, which qBittorrent makes from 5.2 on.
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key,optional"`
 	// User and Password log in to a qBittorrent before 5.2, which has no
 	// keys, with one POST (ADR 0009). With neither a key nor a user,
 	// qBittorrent must let Overlook's address in without a login.
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user" setup:"text,optional"`
+	Password string `yaml:"password" setup:"key,optional"`
 
 	source fetch.Source
 	totals *fetch.Cache[totals]

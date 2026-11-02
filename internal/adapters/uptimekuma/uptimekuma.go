@@ -29,12 +29,12 @@ const (
 
 // Config is one Uptime Kuma, under sources.uptimekuma in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Uptime Kuma.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://kuma.example.com:3001"`
 	// Page is the slug of the status page whose monitors Overlook reads,
 	// such as homelab for /status/homelab.
-	Page string `yaml:"page"`
+	Page string `yaml:"page" setup:"text" example:"homelab"`
 	// Link is where the page sends the owner, if not URL.
 	Link string `yaml:"link"`
 	// Areas maps each group of the status page not named like an area to

@@ -22,14 +22,14 @@ import (
 
 // Config is one Checkmate, under sources.checkmate in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Checkmate, such as http://checkmate:52345.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://checkmate.example.com:52345"`
 	// User and Password are a Checkmate user's email and password: one with
 	// the role user, which reads every monitor and changes none. Checkmate
 	// lets Overlook in only with a login, one POST (ADR 0009).
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user" setup:"text" example:"overlook@example.com"`
+	Password string `yaml:"password" setup:"key"`
 	// Link is where the page sends the owner, if not URL.
 	Link string `yaml:"link"`
 	// Areas maps each group of monitors not named like an area to the area

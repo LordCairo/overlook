@@ -19,7 +19,7 @@ const Area = "apps"
 
 // Config is one Prowlarr, under sources.prowlarr in overlook.yaml.
 type Config struct {
-	servarr.Config `yaml:",inline"`
+	servarr.Config `yaml:",inline" example:"http://prowlarr.example.com:9696"`
 }
 
 // Check fills c's defaults and refuses what can't work.

@@ -21,12 +21,12 @@ const Area = "network"
 
 // Config is one AdGuard Home, under sources.adguard in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads AdGuard Home.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://adguard.example.com"`
 	// User and Password are the login Overlook reads it with.
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user" setup:"text,optional"`
+	Password string `yaml:"password" setup:"key,optional"`
 
 	source fetch.Source
 }

@@ -20,7 +20,7 @@ const Area = "apps"
 
 // Config is one Sonarr, under sources.sonarr in overlook.yaml.
 type Config struct {
-	servarr.Config `yaml:",inline"`
+	servarr.Config `yaml:",inline" example:"http://sonarr.example.com:8989"`
 
 	shows *fetch.Cache[[]series]
 }

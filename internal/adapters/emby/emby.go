@@ -17,7 +17,7 @@ const Area = mediabrowser.Area
 
 // Config is one Emby, under sources.emby in overlook.yaml.
 type Config struct {
-	mediabrowser.Config `yaml:",inline"`
+	mediabrowser.Config `yaml:",inline" example:"http://emby.example.com:8096"`
 }
 
 // Check fills c's defaults and refuses what can't work.

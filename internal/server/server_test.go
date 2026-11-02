@@ -2,6 +2,8 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -11,6 +13,7 @@ import (
 
 	"github.com/bnlqn/overlook/internal/config"
 	"github.com/bnlqn/overlook/internal/snapshot"
+	"github.com/bnlqn/overlook/web"
 )
 
 func get(t *testing.T, h http.Handler, path string) *httptest.ResponseRecorder {
@@ -50,7 +53,9 @@ func TestRoutes(t *testing.T) {
 			t.Errorf("%s: no policy: %q", path, csp)
 		}
 	}
-	for _, path := range []string{"/overlook.yaml", "/i18n/en", "/i18n/..%2fweb.go", "/icons/..%2f..%2fgo.mod", "/icons/..%2fstyle.css"} {
+	// /setup too, which a setup page still open asks for until Overlook is
+	// back with its config.
+	for _, path := range []string{"/overlook.yaml", "/setup", "/i18n/en", "/i18n/..%2fweb.go", "/icons/..%2f..%2fgo.mod", "/icons/..%2fstyle.css"} {
 		if rec := get(t, h, path); rec.Code != http.StatusNotFound && rec.Code != http.StatusBadRequest {
 			t.Errorf("%s: %d, want nothing", path, rec.Code)
 		}
@@ -81,5 +86,94 @@ func TestSnapshot(t *testing.T) {
 	}
 	if len(snap.Sources) != 1 || snap.Sources[0].Answered || rec.Header().Get("Cache-Control") != "no-store" {
 		t.Errorf("Gatus didn't answer: %+v", snap.Sources)
+	}
+}
+
+func TestSetup(t *testing.T) {
+	t.Parallel()
+	h, err := Setup()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for path, want := range map[string]string{
+		"/":             `src="js/setup.js"`,
+		"/setup":        `"key":"gatus"`,
+		"/js/setup.js":  "tryOne",
+		"/i18n/en.json": `"setup.title"`,
+	} {
+		if rec := get(t, h, path); rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), want) {
+			t.Errorf("%s: %d, want %q", path, rec.Code, want)
+		}
+	}
+	for _, path := range []string{"/snapshot", "/servers", "/custom.css"} {
+		if rec := get(t, h, path); rec.Code != http.StatusNotFound {
+			t.Errorf("%s: %d, want nothing while there is no config", path, rec.Code)
+		}
+	}
+
+	gatus := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { fmt.Fprint(w, "[]") }))
+	t.Cleanup(gatus.Close)
+	try := func(origin, body string) (int, tried) {
+		req := httptest.NewRequestWithContext(t.Context(), http.MethodPost, "/setup", strings.NewReader(body))
+		if origin != "" {
+			req.Header.Set("Origin", origin)
+		}
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		var got tried
+		_ = json.Unmarshal(rec.Body.Bytes(), &got)
+		return rec.Code, got
+	}
+	body := `{"adapter":"gatus","fields":{"url":"` + gatus.URL + `"}}`
+	for _, origin := range []string{"", "https://elsewhere.example.com", "null"} {
+		if code, _ := try(origin, body); code != http.StatusForbidden {
+			t.Errorf("Origin %q: %d, want refused", origin, code)
+		}
+	}
+	if code, got := try("http://example.com", body); code != http.StatusOK || got != (tried{Name: "Gatus"}) {
+		t.Errorf("Gatus answered with nothing: %d %+v", code, got)
+	}
+	if _, got := try("http://example.com", `{"adapter":"immich","fields":{"url":"http://immich.example.com"}}`); got.Error != "key is missing" || got.Why != "" {
+		t.Errorf("Immich without its key: %+v", got)
+	}
+	gone := httptest.NewServer(nil)
+	gone.Close()
+	if _, got := try("http://example.com", `{"adapter":"gatus","fields":{"url":"`+gone.URL+`"}}`); got.Why != "refused" || got.Name != "Gatus" {
+		t.Errorf("a Gatus that's gone: %+v", got)
+	}
+}
+
+// Every adapter the setup page offers, and every field it asks for, has its
+// words, each adapter's name is its README section's heading, which the
+// page links to, and its logo is one Overlook ships.
+func TestSetupWords(t *testing.T) {
+	t.Parallel()
+	english, err := web.English()
+	if err != nil {
+		t.Fatal(err)
+	}
+	adapters, err := config.Adapters()
+	if err != nil {
+		t.Fatal(err)
+	}
+	readme, err := os.ReadFile("../../README.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, a := range adapters {
+		name, ok := english["setup.adapter."+a.Key].(string)
+		if !ok {
+			t.Errorf("setup.adapter.%s is missing", a.Key)
+		} else if !strings.Contains(string(readme), "\n### "+name+"\n") {
+			t.Errorf("%s: no README section is named %q", a.Key, name)
+		}
+		for _, ask := range a.Asks {
+			if _, ok := english["setup.field."+ask.Field]; !ok {
+				t.Errorf("%s: setup.field.%s is missing", a.Key, ask.Field)
+			}
+		}
+		if _, err := fs.Stat(web.FS, "icons/"+a.Icon); a.Icon != "" && err != nil {
+			t.Errorf("%s: %v", a.Key, err)
+		}
 	}
 }

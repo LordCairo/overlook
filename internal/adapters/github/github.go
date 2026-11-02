@@ -22,11 +22,11 @@ import (
 // Config is the repositories whose updates the page shows, under
 // sources.github in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// Repos are the repositories read, each as owner/name.
-	Repos []string `yaml:"repos"`
+	Repos []string `yaml:"repos" setup:"list" example:"example/homelab example/dotfiles"`
 	// Token reads private repositories; public ones need none.
-	Token string `yaml:"token"`
+	Token string `yaml:"token" setup:"key,optional"`
 	// URL is the API Overlook reads, if not GitHub's own: a GitHub
 	// Enterprise Server's, such as https://github.example.com/api/v3.
 	URL string `yaml:"url"`

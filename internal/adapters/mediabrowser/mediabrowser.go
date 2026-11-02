@@ -25,13 +25,13 @@ const Area = "apps"
 
 // Config is one Jellyfin or Emby.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads it, such as http://jellyfin:8096.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text"`
 	// Key is an API key, from the dashboard's API Keys. It can do anything
 	// an administrator can, and no lesser one exists; Overlook's GET-only
 	// reads keep it harmless (ADR 0001).
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key"`
 
 	source fetch.Source
 }

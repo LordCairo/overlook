@@ -23,13 +23,13 @@ const Area = "network"
 
 // Config is one Pi-hole, under sources.pihole in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Pi-hole's web interface, such as
 	// http://pihole.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://pihole.example.com"`
 	// Password is an app password, which Overlook logs in with once
 	// (ADR 0009). With none, Pi-hole must ask for none.
-	Password string `yaml:"password"`
+	Password string `yaml:"password" setup:"key,optional"`
 
 	source fetch.Source
 }

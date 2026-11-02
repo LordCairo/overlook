@@ -22,11 +22,11 @@ const Area = "apps"
 
 // Config is one Immich, under sources.immich in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Immich, such as http://immich:2283.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://immich.example.com:2283"`
 	// Key is an API key with the read permissions the README names.
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key"`
 
 	source fetch.Source
 }

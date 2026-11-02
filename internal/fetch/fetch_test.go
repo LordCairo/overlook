@@ -3,6 +3,7 @@ package fetch
 import (
 	"context"
 	"encoding/pem"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 )
 
 // open readies s, failing t if it can't.
@@ -288,5 +290,63 @@ func TestCheckURL(t *testing.T) {
 		if err := CheckURL(raw); (err == nil) != ok {
 			t.Errorf("%s: %v", raw, err)
 		}
+	}
+}
+
+// Each failure the setup page says what to do about is told apart.
+func TestWhy(t *testing.T) {
+	t.Parallel()
+	refuse := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/key":
+			http.Error(w, "", http.StatusUnauthorized)
+		case "/slow":
+			<-r.Context().Done()
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	t.Cleanup(refuse.Close)
+	signed := httptest.NewTLSServer(http.NotFoundHandler())
+	t.Cleanup(signed.Close)
+	gone := httptest.NewServer(nil)
+	gone.Close()
+	// A server that answers a TLS handshake with neither TLS nor HTTP.
+	junk, err := new(net.ListenConfig).Listen(t.Context(), "tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { junk.Close() })
+	go func() {
+		for {
+			c, err := junk.Accept()
+			if err != nil {
+				return
+			}
+			_, _ = c.Write([]byte("SSH-2.0-example\r\n"))
+			c.Close()
+		}
+	}()
+	for _, tc := range []struct{ url, path, want string }{
+		{signed.URL, "", "certificate"},
+		{strings.Replace(refuse.URL, "http:", "https:", 1), "", "plain"},
+		{"https://" + junk.Addr().String(), "", "plain"},
+		{gone.URL, "", "refused"},
+		{"http://overlook.invalid", "", "no_host"},
+		{refuse.URL, "/slow", "timeout"},
+		{refuse.URL, "/key", "key"},
+		{refuse.URL, "/none", "not_found"},
+	} {
+		ctx, cancel := context.WithTimeout(t.Context(), 300*time.Millisecond)
+		err := open(t, Source{URL: tc.url}).JSON(ctx, tc.path, new(any))
+		cancel()
+		if got := Why(err); got != tc.want {
+			t.Errorf("%s%s: %q, want %q, from %v", tc.url, tc.path, got, tc.want, err)
+		}
+	}
+	// A certificate for another name: the CA is trusted, the name isn't it.
+	s := open(t, Source{URL: strings.Replace(signed.URL, "127.0.0.1", "localhost", 1), CA: caFile(t, signed)})
+	if got := Why(s.JSON(t.Context(), "", new(any))); got != "certificate_name" {
+		t.Errorf("another name: %q", got)
 	}
 }

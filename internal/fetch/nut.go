@@ -78,7 +78,7 @@ func unescape(s string) string {
 func short(ctx context.Context, err error) error {
 	var ne net.Error
 	if ctx.Err() != nil || (errors.As(err, &ne) && ne.Timeout()) {
-		return errors.New("timeout")
+		return errTimeout
 	}
 	var op *net.OpError
 	if errors.As(err, &op) {

@@ -31,15 +31,15 @@ const week = 7 * 24 * time.Hour
 // Config is one Proxmox VE host or cluster, under sources.proxmox in
 // overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Proxmox, such as https://pve.example.com:8006.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"https://pve.example.com:8006"`
 	// Token is an API token's ID, as user@realm!name, and Secret its secret.
-	Token  string `yaml:"token"`
-	Secret string `yaml:"secret"`
+	Token  string `yaml:"token" setup:"text" example:"overlook@pve!overlook"`
+	Secret string `yaml:"secret" setup:"key"`
 	// CA is a PEM file of the CA that signed Proxmox's certificate, such as
 	// the host's /etc/pve/pve-root-ca.pem, when the system doesn't trust it.
-	CA string `yaml:"ca"`
+	CA string `yaml:"ca" setup:"text,optional" example:"/etc/overlook/pve-root-ca.pem"`
 
 	source fetch.Source
 }

@@ -25,14 +25,14 @@ const Area = "servers"
 
 // Config is one Beszel hub, under sources.beszel in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads the hub, such as http://beszel:8090.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://beszel.example.com:8090"`
 	// User and Password are a Beszel user's email and password: one with
 	// the role readonly, given the systems to show. Beszel lets Overlook in
 	// only with a login, one POST (ADR 0009).
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user" setup:"text" example:"overlook@example.com"`
+	Password string `yaml:"password" setup:"key"`
 
 	source fetch.Source
 }
