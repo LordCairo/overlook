@@ -23463,5 +23463,30 @@
       "parent_id": null,
       "user_id": null
     }
+  },
+  {
+    "entity_id": "alarm_control_panel.alarmo",
+    "state": "disarmed",
+    "attributes": {
+      "code_format": null,
+      "changed_by": null,
+      "code_arm_required": false,
+      "arm_mode": null,
+      "next_state": "disarmed",
+      "open_sensors": null,
+      "bypassed_sensors": null,
+      "delay": null,
+      "last_triggered": "2026-10-26 22:14:07",
+      "friendly_name": "Alarm",
+      "supported_features": 63
+    },
+    "last_changed": "2026-10-27T06:51:30.402118+00:00",
+    "last_reported": "2026-10-27T06:51:30.402118+00:00",
+    "last_updated": "2026-10-27T06:51:30.402118+00:00",
+    "context": {
+      "id": "01KS1C4QX8M2T7VJ9A3E6RWNPB",
+      "parent_id": null,
+      "user_id": null
+    }
   }
 ]
