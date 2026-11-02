@@ -74,8 +74,10 @@ function why(a, got, fields) {
     certificate_name: named ? "setup.why.certificate_name" : "setup.why.certificate_name_none",
     plain: "setup.why.plain",
     refused: loopback ? "setup.why.localhost" : "setup.why.refused",
+    // In a container, a .local name may not fail to be found: its lookup
+    // can wait out the timeout instead.
     no_host: local ? "setup.why.local" : "setup.why.no_host",
-    timeout: "setup.why.timeout",
+    timeout: local ? "setup.why.local" : "setup.why.timeout",
     key: "setup.why.key",
     not_found: "setup.why.not_found",
   }[got.why];
@@ -172,6 +174,7 @@ async function start() {
   const setup = await fetch("setup").then((r) => r.json());
   adapters = setup.adapters;
   base = readme(setup.version);
+  if (setup.unraid) $("restart").innerHTML = t("setup.restart_unraid");
   $("groups").innerHTML = GROUPS.map(
     (g) => `<section class="block">
       <h2 class="block-title">${groupName(g)}${g === "checkengines" ? `<span class="hint">${t("setup.group.checkengines_hint")}</span>` : ""}</h2>

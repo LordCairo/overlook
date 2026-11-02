@@ -102,6 +102,9 @@ services:
       - ./overlook:/etc/overlook:ro # the config and its keys, read-only: Overlook writes nothing
     environment:
       TZ: Europe/Brussels           # when today starts
+    read_only: true                 # Overlook writes nothing,
+    cap_drop: [ALL]                 # needs no Linux capability,
+    security_opt: ["no-new-privileges:true"] # and can gain none
 ```
 
 Then `docker compose up -d`, and open port 8080 of that host. With no
@@ -173,6 +176,14 @@ overlook -config /etc/overlook/overlook.yaml -listen :8080
 
 It reads `.env` beside the config there too, and shows the setup page until
 the config exists.
+
+On Unraid, add `https://github.com/bnlqn/overlook` under Template
+repositories at the foot of the Docker page's Add Container, then pick
+Overlook as the template and apply it. Its config folder is
+`/mnt/user/appdata/overlook`, it runs locked down as above, and Unraid
+gives it `TZ` itself. Its WebUI opens the setup page, which says how to
+save the two files on Unraid. To link the Unraid server itself in the
+sidebar, as a tool, give it `icon: unraid.svg`, which Overlook ships.
 
 ## Configuring
 
@@ -1174,7 +1185,7 @@ evening of YAML:
 1. [x] The setup page, in place of the page while there is no config:
        each source tried once, and the config handed back to save
        (ADR 0014).
-2. [ ] A template for Unraid's Community Applications, so that Overlook
+2. [x] A template for Unraid's Community Applications, so that Overlook
        installs from there and opens on its setup page.
 
 The [adapters wanted](https://github.com/bnlqn/overlook/issues?q=is%3Aissue%20is%3Aopen%20label%3Aenhancement)
