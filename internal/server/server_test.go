@@ -177,3 +177,19 @@ func TestSetupWords(t *testing.T) {
 		}
 	}
 }
+
+// On Unraid, which says so in HOST_OS, as "Unraid" or once "unRAID", the
+// setup page says where to save the files there.
+func TestSetupOnUnraid(t *testing.T) {
+	for host, want := range map[string]bool{"unRAID": true, "Unraid": true, "": false} {
+		t.Setenv("HOST_OS", host)
+		h, err := Setup()
+		if err != nil {
+			t.Fatal(err)
+		}
+		var got struct{ Unraid bool }
+		if err := json.Unmarshal(get(t, h, "/setup").Body.Bytes(), &got); err != nil || got.Unraid != want {
+			t.Errorf("HOST_OS %q: unraid %v, want %v (%v)", host, got.Unraid, want, err)
+		}
+	}
+}

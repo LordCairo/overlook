@@ -53,6 +53,7 @@ and open <http://localhost:8080>.
 | `internal/adapters/adaptertest` | the contract test every adapter passes |
 | `internal/server` | the routes, the setup page's and its try's while there is no config, and the headers every answer carries |
 | `web` | the page, embedded in the binary: HTML, `style.css`, the modules in `js/`, their tests in `test/`, the words in `i18n/`. A decision the page makes goes in `js/page.js`, with a test; `overview.js`, `area.js` and `shell.js` only write what it returns. `setup.html` and `setup.js` are the setup page, and `config.js` the files it hands back |
+| `unraid` | the template for Unraid's Community Applications and its icon; `ca_profile.xml`, at the root, where the listing looks for it, is the listing's profile |
 | `demo` | the demo: an invented snapshot with every adapter's parts, a small and a large homelab beside it, the contract the server and the page keep (ADR 0003), and what writes the page from them for GitHub Pages |
 
 ## Adding an adapter
@@ -97,7 +98,7 @@ Versions follow [Semantic Versioning](https://semver.org) to the letter. A fix i
 
 Each release goes in three steps:
 
-1. **A pull request** brings every file that names a version up to the new one: the image in the README's quick start and its line on the image, the README's road under What's next, the commands in SECURITY.md, and any proposed ADR written for the next road.
+1. **A pull request** brings every file that names a version up to the new one: the image in the README's quick start and its line on the image, the README's road under What's next, the commands in SECURITY.md, and any proposed ADR written for the next road. Unraid's template, in `unraid/`, follows `latest` and names no version, so its owners get each release as an update: a release that breaks a config says so first in its notes, as above.
 2. **The tag**, on `main` once that pull request is merged, annotated as `Overlook v0.4.0, which …`, saying what it brings.
 3. **The notes**: once the release is published, they go above GitHub's list of what was merged: what's new, how to upgrade, with anything that breaks first, and how to check the build (SECURITY.md).
 

@@ -91,8 +91,13 @@ func Setup() (http.Handler, error) {
 		return nil, err
 	}
 	// The version, so that the page links the README of the Overlook that
-	// runs.
-	asks, err := json.Marshal(map[string]any{"version": snapshot.Version, "adapters": adapters})
+	// runs, and whether it runs on Unraid, which sets HOST_OS in every
+	// container, so that it says where to save the files there.
+	asks, err := json.Marshal(map[string]any{
+		"version":  snapshot.Version,
+		"unraid":   strings.EqualFold(os.Getenv("HOST_OS"), "unraid"),
+		"adapters": adapters,
+	})
 	if err != nil {
 		return nil, err
 	}
