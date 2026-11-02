@@ -26,11 +26,11 @@ const waiting = 20
 
 // Config is one Seerr, under sources.seerr in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Seerr, such as http://seerr:5055.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://seerr.example.com:5055"`
 	// Key is Seerr's API key, from Settings, General.
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key"`
 	// Link is where the page sends the owner to approve a request, if not
 	// URL.
 	Link string `yaml:"link"`

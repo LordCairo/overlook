@@ -11,6 +11,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"io/fs"
 	"log/slog"
 	"net/http"
 	"os"
@@ -40,11 +41,7 @@ func run() error {
 	listen := flag.String("listen", ":8080", "the address to serve the page on")
 	flag.Parse()
 
-	c, err := config.Load(*path)
-	if err != nil {
-		return err
-	}
-	handler, err := server.New(c, filepath.Dir(*path))
+	handler, sources, err := open(*path)
 	if err != nil {
 		return err
 	}
@@ -62,7 +59,7 @@ func run() error {
 	defer stop()
 	served := make(chan error, 1)
 	go func() { served <- srv.ListenAndServe() }()
-	slog.Info("overlook is serving", "version", snapshot.Version, "address", *listen, "sources", len(c.Readers()))
+	slog.Info("overlook is serving", "version", snapshot.Version, "address", *listen, "sources", sources)
 	select {
 	case err := <-served:
 		return err
@@ -74,4 +71,21 @@ func run() error {
 		return err
 	}
 	return nil
+}
+
+// open serves the page for the config at path, and says how many sources it
+// reads; or, while there is no config at all, the setup page (ADR 0014). A
+// config that is there but wrong stops Overlook, and says why.
+func open(path string) (http.Handler, int, error) {
+	if _, err := os.Stat(path); errors.Is(err, fs.ErrNotExist) {
+		slog.Info("no config, so the page is the setup page until there is one", "config", path)
+		h, err := server.Setup()
+		return h, 0, err
+	}
+	c, err := config.Load(path)
+	if err != nil {
+		return nil, 0, err
+	}
+	h, err := server.New(c, filepath.Dir(path))
+	return h, len(c.Readers()), err
 }

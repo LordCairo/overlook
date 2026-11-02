@@ -82,14 +82,12 @@ What it can't read, and why, is under [Can't be read](#cant-be-read).
 
 ## Quick start
 
-Overlook is one container. Put its config in a folder of its own, beside a
-`compose.yaml`:
+Overlook is one container. Give it a folder of its own for its config,
+beside a `compose.yaml`:
 
 ```
 overlook/
-  overlook.yaml
 compose.yaml
-.env
 ```
 
 ```yaml
@@ -101,11 +99,22 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./overlook:/etc/overlook:ro # the config, read-only: Overlook writes nothing
-    env_file: .env                  # the keys
+      - ./overlook:/etc/overlook:ro # the config and its keys, read-only: Overlook writes nothing
     environment:
       TZ: Europe/Brussels           # when today starts
 ```
+
+Then `docker compose up -d`, and open port 8080 of that host. With no
+config yet, Overlook shows its setup page: pick the tools your homelab
+runs, give each its address and key, and try it. From the sources that
+answered, the setup page puts together two files, `overlook.yaml` and the
+`.env` that holds their keys. Save both in `overlook/`, then
+`docker compose restart`, and the setup page, still open, turns into the
+page. A source that didn't answer its try says what to do about it, such
+as for a certificate Overlook doesn't trust. The log says which sources
+Overlook reads, and the page names any that didn't answer.
+
+The two files look like this, and you can write them yourself instead:
 
 ```yaml
 # overlook/overlook.yaml
@@ -115,7 +124,7 @@ sources:
   proxmox:
     - url: https://pve.example.com:8006
       token: overlook@pve!overlook
-      secret: ${PROXMOX_SECRET}       # from the environment
+      secret: ${PROXMOX_SECRET}       # from .env
       ca: /etc/overlook/pve-root-ca.pem # copied into overlook/
 
 apps:
@@ -126,20 +135,27 @@ apps:
 ```
 
 ```sh
-# .env: the keys, for your eyes only (chmod 600 .env)
+# overlook/.env: the keys
 PROXMOX_SECRET=00000000-0000-0000-0000-000000000000
 ```
 
-Then `docker compose up -d`, and open port 8080 of that host. The log says
-which sources Overlook reads, and the page names any that didn't answer.
-
-- **Keys come from the environment.** A `${VAR}` anywhere in the config is
-  read from Overlook's environment, so the config holds no secret and can
-  be shared or kept in git. A `${VAR}` that isn't set stops Overlook, and
-  says which.
+- **Keys come from `.env`**, beside the config, or from Overlook's
+  environment, which wins. A `${VAR}` anywhere in the config is read from
+  either, so the config holds no secret and can be shared or kept in git,
+  while `.env` stays out of it. A `${VAR}` set in neither stops Overlook,
+  and says which. `.env` holds a `NAME=value` a line, the value all that
+  follows the first `=`, with no quotes taken off, so a key holding `#` or
+  a quote stays whole; a line that starts with `#` is a comment.
 - **The config is mounted read-only**, at `/etc/overlook`, with a CA file or
   your own icons beside it. The image runs as uid 65532, so the folder and
-  its files must be readable by others, as they are by default.
+  its files must be readable by others, as they are by default. To keep
+  `.env` from everyone else on the host, give it to that user:
+  `sudo chown 65532 overlook/.env && sudo chmod 600 overlook/.env`.
+- **The setup page is there only while there is no `overlook.yaml`.** A
+  config that is there but wrong, an empty one too, stops Overlook, and
+  says why. While the setup page is up, anyone who can open it can have
+  Overlook read an address they type, as [SECURITY.md](SECURITY.md) says,
+  so save the files soon.
 - **`TZ`** says when today starts, for today's figures. Any zone works: the
   zone database is inside the binary.
 - **The image** is `ghcr.io/bnlqn/overlook`, for amd64 and arm64: `0.4` for
@@ -154,6 +170,9 @@ or a Raspberry Pi:
 ```bash
 overlook -config /etc/overlook/overlook.yaml -listen :8080
 ```
+
+It reads `.env` beside the config there too, and shows the setup page until
+the config exists.
 
 ## Configuring
 
@@ -219,7 +238,7 @@ the others where they wait, never on the page (ADR 0010), and the page
 follows within 30 seconds.
 
 **Flags.** `-config` names the config (`overlook.yaml` by default), and
-`icons/` and `custom.css` are read beside it; `-listen` is the address to
+`.env`, `icons/` and `custom.css` are read beside it; `-listen` is the address to
 serve the page on (`:8080`).
 
 ## Adapters
@@ -1149,8 +1168,16 @@ file; [CONTRIBUTING.md](CONTRIBUTING.md#translating) says how.
 
 `v0.4.0` is the newest release, and [the releases](https://github.com/bnlqn/overlook/releases)
 say what each one brought. The road to v0.5 is written from what people
-ask for, and goes here. Until then, the
-[adapters wanted](https://github.com/bnlqn/overlook/issues?q=is%3Aissue%20is%3Aopen%20label%3Aenhancement)
+ask for, so that a homelab's first page takes minutes rather than an
+evening of YAML:
+
+1. [x] The setup page, in place of the page while there is no config:
+       each source tried once, and the config handed back to save
+       (ADR 0014).
+2. [ ] A template for Unraid's Community Applications, so that Overlook
+       installs from there and opens on its setup page.
+
+The [adapters wanted](https://github.com/bnlqn/overlook/issues?q=is%3Aissue%20is%3Aopen%20label%3Aenhancement)
 are open as issues: if you run one of them, its issue says what an
 adapter for it takes.
 

@@ -1,4 +1,6 @@
-# What `go build ./cmd/overlook` makes, what GoReleaser does, and the demo.
+# What `go build ./cmd/overlook` makes, what GoReleaser does, the demo, and
+# the keys of an Overlook tried from here (ADR 0014).
 /overlook
 /dist/
 /_site/
+.env

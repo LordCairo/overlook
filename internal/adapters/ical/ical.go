@@ -19,13 +19,13 @@ import (
 
 // Config is one to-do list, under sources.ical in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is the list's iCalendar file: on Radicale the list itself, such as
 	// https://dav.example.com/owner/chores/, and on Nextcloud or Baïkal the
 	// list with ?export.
-	URL      string `yaml:"url"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	URL      string `yaml:"url" setup:"text" example:"https://dav.example.com/owner/chores/"`
+	User     string `yaml:"user" setup:"text,optional"`
+	Password string `yaml:"password" setup:"key,optional"`
 
 	source fetch.Source
 }

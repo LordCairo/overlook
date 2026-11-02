@@ -6,13 +6,17 @@
 package fetch
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
+	"syscall"
 )
 
 // maxAnswer is the largest answer read from a source. The largest known,
@@ -62,7 +66,7 @@ func do(hc *http.Client, req *http.Request) (http.Header, []byte, error) {
 		var u *url.Error
 		if errors.As(err, &u) {
 			if u.Timeout() {
-				return nil, nil, errors.New("timeout")
+				return nil, nil, errTimeout
 			}
 			return nil, nil, u.Err
 		}
@@ -80,6 +84,45 @@ func do(hc *http.Client, req *http.Request) (http.Header, []byte, error) {
 		return nil, nil, fmt.Errorf("an answer over %d MiB", maxAnswer>>20)
 	}
 	return res.Header, body, nil
+}
+
+// errTimeout is a source that didn't answer in time.
+var errTimeout = errors.New("timeout")
+
+// Why says what kind of failure err is, so that the setup page can say what
+// to do about it (ADR 0014): certificate, for one signed by a CA the system
+// doesn't trust; certificate_name, for one for another name; plain, for an
+// http:// source read as https://; refused, no_host or timeout; key, for a
+// key or login refused; not_found; or nothing, for any other.
+func Why(err error) string {
+	var (
+		authority x509.UnknownAuthorityError
+		name      x509.HostnameError
+		record    tls.RecordHeaderError
+		dns       *net.DNSError
+		code      status
+	)
+	switch {
+	case errors.As(err, &authority):
+		return "certificate"
+	case errors.As(err, &name):
+		return "certificate_name"
+	// net/http says it of an answer in HTTP only in words; anything else
+	// that isn't TLS fails its first record.
+	case errors.As(err, &record), err != nil && strings.Contains(err.Error(), "server gave HTTP response to HTTPS client"):
+		return "plain"
+	case errors.Is(err, syscall.ECONNREFUSED):
+		return "refused"
+	case errors.As(err, &dns):
+		return "no_host"
+	case errors.Is(err, errTimeout):
+		return "timeout"
+	case errors.As(err, &code) && (code == http.StatusUnauthorized || code == http.StatusForbidden):
+		return "key"
+	case errors.As(err, &code) && code == http.StatusNotFound:
+		return "not_found"
+	}
+	return ""
 }
 
 // status is a source answering with a status other than 200.

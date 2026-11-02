@@ -25,11 +25,11 @@ const api = "/v1.44"
 
 // Config is one Docker engine, under sources.docker in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Docker's API: a socket proxy that lets
 	// through only the containers' reads, such as http://socket-proxy:2375.
 	// Overlook reads over HTTP only, never from the socket itself.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://socket-proxy.example.com:2375"`
 
 	source fetch.Source
 }

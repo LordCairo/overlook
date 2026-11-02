@@ -1,6 +1,6 @@
 // Package config reads overlook.yaml: the sources to read, and the apps and
 // tools to link to. A key it doesn't know is an error, so a typo never goes unnoticed, and a ${VAR} comes from
-// the environment.
+// the environment, or from the .env beside the config.
 package config
 
 import (
@@ -9,7 +9,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
+	"reflect"
 	"regexp"
 	"slices"
 	"strings"
@@ -56,39 +59,43 @@ type Config struct {
 
 	// readers are the sources check let through, each with its read.
 	readers []snapshot.Source
+	// adapters are every adapter, as check met them.
+	adapters []Adapter
 }
 
 // Sources are the sources to read, by adapter: each adapter's own config.
 // An adapter's key is written twice, in its tag and in its add line, on
 // purpose: the strict decoder needs a field for it, and reading the key
-// from the tag would take reflection, which no compiler checks.
+// from the tag would take reflection, which no compiler checks. Its icon:
+// tag is its logo on the setup page, a file in web/icons that the server's
+// test checks; an iCalendar list, served by many programs, has none.
 type Sources struct {
-	Gatus         []gatus.Config         `yaml:"gatus"`
-	UptimeKuma    []uptimekuma.Config    `yaml:"uptimekuma"`
-	Grafana       []grafana.Config       `yaml:"grafana"`
-	Prometheus    []prometheus.Config    `yaml:"prometheus"`
-	Checkmate     []checkmate.Config     `yaml:"checkmate"`
-	GitHub        []github.Config        `yaml:"github"`
-	Immich        []immich.Config        `yaml:"immich"`
-	PBS           []pbs.Config           `yaml:"pbs"`
-	Proxmox       []proxmox.Config       `yaml:"proxmox"`
-	Beszel        []beszel.Config        `yaml:"beszel"`
-	Docker        []docker.Config        `yaml:"docker"`
-	Radarr        []radarr.Config        `yaml:"radarr"`
-	Sonarr        []sonarr.Config        `yaml:"sonarr"`
-	Prowlarr      []prowlarr.Config      `yaml:"prowlarr"`
-	QBittorrent   []qbittorrent.Config   `yaml:"qbittorrent"`
-	Jellyfin      []jellyfin.Config      `yaml:"jellyfin"`
-	Emby          []emby.Config          `yaml:"emby"`
-	Tautulli      []tautulli.Config      `yaml:"tautulli"`
-	Seerr         []seerr.Config         `yaml:"seerr"`
-	HomeAssistant []homeassistant.Config `yaml:"homeassistant"`
-	Paperless     []paperless.Config     `yaml:"paperless"`
-	Nextcloud     []nextcloud.Config     `yaml:"nextcloud"`
-	NUT           []nut.Config           `yaml:"nut"`
-	UniFi         []unifi.Config         `yaml:"unifi"`
-	AdGuard       []adguard.Config       `yaml:"adguard"`
-	PiHole        []pihole.Config        `yaml:"pihole"`
+	Gatus         []gatus.Config         `yaml:"gatus" icon:"gatus.svg"`
+	UptimeKuma    []uptimekuma.Config    `yaml:"uptimekuma" icon:"uptime-kuma.svg"`
+	Grafana       []grafana.Config       `yaml:"grafana" icon:"grafana.svg"`
+	Prometheus    []prometheus.Config    `yaml:"prometheus" icon:"prometheus.svg"`
+	Checkmate     []checkmate.Config     `yaml:"checkmate" icon:"checkmate.svg"`
+	GitHub        []github.Config        `yaml:"github" icon:"github.svg"`
+	Immich        []immich.Config        `yaml:"immich" icon:"immich.svg"`
+	PBS           []pbs.Config           `yaml:"pbs" icon:"proxmox-backup-server.svg"`
+	Proxmox       []proxmox.Config       `yaml:"proxmox" icon:"proxmox.svg"`
+	Beszel        []beszel.Config        `yaml:"beszel" icon:"beszel.svg"`
+	Docker        []docker.Config        `yaml:"docker" icon:"docker.svg"`
+	Radarr        []radarr.Config        `yaml:"radarr" icon:"radarr.svg"`
+	Sonarr        []sonarr.Config        `yaml:"sonarr" icon:"sonarr.svg"`
+	Prowlarr      []prowlarr.Config      `yaml:"prowlarr" icon:"prowlarr.svg"`
+	QBittorrent   []qbittorrent.Config   `yaml:"qbittorrent" icon:"qbittorrent.svg"`
+	Jellyfin      []jellyfin.Config      `yaml:"jellyfin" icon:"jellyfin.svg"`
+	Emby          []emby.Config          `yaml:"emby" icon:"emby.svg"`
+	Tautulli      []tautulli.Config      `yaml:"tautulli" icon:"tautulli.svg"`
+	Seerr         []seerr.Config         `yaml:"seerr" icon:"seerr.svg"`
+	HomeAssistant []homeassistant.Config `yaml:"homeassistant" icon:"home-assistant.svg"`
+	Paperless     []paperless.Config     `yaml:"paperless" icon:"paperless-ngx.svg"`
+	Nextcloud     []nextcloud.Config     `yaml:"nextcloud" icon:"nextcloud.svg"`
+	NUT           []nut.Config           `yaml:"nut" icon:"network-ups-tools.svg"`
+	UniFi         []unifi.Config         `yaml:"unifi" icon:"unifi.png"`
+	AdGuard       []adguard.Config       `yaml:"adguard" icon:"adguard-home.svg"`
+	PiHole        []pihole.Config        `yaml:"pihole" icon:"pi-hole.svg"`
 	Ical          []ical.Config          `yaml:"ical"`
 }
 
@@ -103,6 +110,7 @@ func add[C any, P interface {
 	*C
 	Check() error
 }](c *Config, key, area, kind string, list []C, name func(C) string, read func(context.Context, C, time.Time) (snapshot.Parts, error)) error {
+	c.adapters = append(c.adapters, Adapter{Key: key, Area: area, Kind: kind, config: reflect.TypeFor[C]()})
 	for i := range list {
 		if err := P(&list[i]).Check(); err != nil {
 			return fmt.Errorf("sources.%s[%d]: %w", key, i, err)
@@ -117,8 +125,9 @@ func add[C any, P interface {
 }
 
 var (
-	envVar = regexp.MustCompile(`\$\{([A-Za-z_][A-Za-z0-9_]*)\}`)
-	color  = regexp.MustCompile(`^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$`)
+	envVar  = regexp.MustCompile(`\$\{([A-Za-z_][A-Za-z0-9_]*)\}`)
+	envName = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+	color   = regexp.MustCompile(`^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$`)
 )
 
 // Load reads the config at path.
@@ -131,28 +140,37 @@ func Load(path string) (Config, error) {
 }
 
 func load(path string) (Config, error) {
-	var c Config
 	raw, err := os.ReadFile(path) //nolint:gosec // the owner names their own config
 	if err != nil {
-		return c, err
+		return Config{}, err
+	}
+	env, err := dotenv(filepath.Join(filepath.Dir(path), ".env"))
+	if err != nil {
+		return Config{}, err
 	}
 	// ${VAR} is replaced in values, after parsing, so that a value can't
 	// change the file's structure and a comment can't name a var.
 	var doc yaml.Node
 	if err := yaml.Unmarshal(raw, &doc); err != nil {
-		return c, err
+		return Config{}, err
 	}
 	if len(doc.Content) == 0 {
-		return c, errors.New("empty")
+		return Config{}, errors.New("empty")
 	}
-	if err := interpolate(&doc); err != nil {
-		return c, err
+	if err := interpolate(&doc, env); err != nil {
+		return Config{}, err
 	}
 	out, err := yaml.Marshal(&doc)
 	if err != nil {
-		return c, err
+		return Config{}, err
 	}
-	dec := yaml.NewDecoder(bytes.NewReader(out))
+	return decode(out)
+}
+
+// decode reads a config with every ${VAR} already replaced, and checks it.
+func decode(raw []byte) (Config, error) {
+	var c Config
+	dec := yaml.NewDecoder(bytes.NewReader(raw))
 	dec.KnownFields(true)
 	if err := dec.Decode(&c); err != nil {
 		return c, err
@@ -160,12 +178,43 @@ func load(path string) (Config, error) {
 	return c, c.check()
 }
 
-func interpolate(n *yaml.Node) error {
+// dotenv reads the .env at path, if there is one: a NAME=value a line, the
+// value all that follows the first =, so that a key holding a # or a quote
+// stays whole. A line that starts with # is a comment.
+func dotenv(path string) (map[string]string, error) {
+	raw, err := os.ReadFile(path) //nolint:gosec // beside the owner's config
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	env := map[string]string{}
+	for i, line := range strings.Split(string(raw), "\n") {
+		line = strings.TrimSuffix(line, "\r")
+		if strings.TrimSpace(line) == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		name, value, ok := strings.Cut(line, "=")
+		if !ok || !envName.MatchString(name) {
+			return nil, fmt.Errorf(".env, line %d: isn't NAME=value", i+1)
+		}
+		env[name] = value
+	}
+	return env, nil
+}
+
+// interpolate replaces each ${VAR} in n's values with VAR from the
+// environment, or else from env, the .env's.
+func interpolate(n *yaml.Node, env map[string]string) error {
 	if n.Kind == yaml.ScalarNode {
 		var unset error
 		n.Value = envVar.ReplaceAllStringFunc(n.Value, func(m string) string {
 			name := envVar.FindStringSubmatch(m)[1]
 			v, ok := os.LookupEnv(name)
+			if !ok {
+				v, ok = env[name]
+			}
 			if !ok && unset == nil {
 				unset = fmt.Errorf("%s is not set", name)
 			}
@@ -174,7 +223,7 @@ func interpolate(n *yaml.Node) error {
 		return unset
 	}
 	for _, child := range n.Content {
-		if err := interpolate(child); err != nil {
+		if err := interpolate(child, env); err != nil {
 			return err
 		}
 	}

@@ -20,7 +20,7 @@ const Area = "apps"
 
 // Config is one Radarr, under sources.radarr in overlook.yaml.
 type Config struct {
-	servarr.Config `yaml:",inline"`
+	servarr.Config `yaml:",inline" example:"http://radarr.example.com:7878"`
 
 	films *fetch.Cache[[]movie]
 }

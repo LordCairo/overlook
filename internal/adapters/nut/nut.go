@@ -23,12 +23,12 @@ const Area = "servers"
 
 // Config is one UPS, under sources.nut in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// Host is where upsd listens, as host or host:port; its port is 3493
 	// unless it says.
-	Host string `yaml:"host"`
+	Host string `yaml:"host" setup:"text" example:"nut.example.com"`
 	// UPS is the UPS's name in upsd, as in its ups.conf.
-	UPS string `yaml:"ups"`
+	UPS string `yaml:"ups" setup:"text" example:"ups"`
 }
 
 // Check fills c's defaults and refuses what can't work.

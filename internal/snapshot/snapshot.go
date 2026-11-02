@@ -17,8 +17,8 @@ const (
 	// fresh is how long a snapshot is served before the next request reads
 	// every source again.
 	fresh = 30 * time.Second
-	// timeout is how long each source has to answer.
-	timeout = 10 * time.Second
+	// Timeout is how long each source has to answer.
+	Timeout = 10 * time.Second
 )
 
 // Version is the Overlook reading, as the tag it was built at without its v,
@@ -109,7 +109,7 @@ func (r *Reader) Snapshot() Snapshot {
 		wg.Go(func() {
 			// Not the request's context: a closed tab mustn't spoil the
 			// snapshot every other tab is waiting for.
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
+			ctx, cancel := context.WithTimeout(context.Background(), Timeout)
 			defer cancel()
 			parts[i], errs[i] = src.Read(ctx, now)
 		})

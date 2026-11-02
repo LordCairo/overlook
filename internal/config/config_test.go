@@ -140,6 +140,33 @@ func TestLoadAnyPassword(t *testing.T) {
 	}
 }
 
+// The .env beside the config gives what the environment doesn't, each value
+// as written after the first =.
+func TestLoadDotenv(t *testing.T) {
+	path := write(t, "sources: { gatus: [ { url: '${GATUS_URL}', user: overlook, password: '${GATUS_PASSWORD}' } ] }")
+	env := "# Overlook's keys\n\nGATUS_URL=http://gatus.example.com:8080\r\nGATUS_PASSWORD=p#ss=\"w rd\"\n"
+	if err := os.WriteFile(filepath.Join(filepath.Dir(path), ".env"), []byte(env), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	c, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g := c.Sources.Gatus[0]; g.URL != "http://gatus.example.com:8080" || g.Password != `p#ss="w rd"` {
+		t.Errorf("read %+v", g)
+	}
+	t.Setenv("GATUS_URL", "https://status.example.com")
+	if c, err = Load(path); err != nil || c.Sources.Gatus[0].URL != "https://status.example.com" {
+		t.Errorf("the environment wins: %v %+v", err, c.Sources.Gatus)
+	}
+	if err := os.WriteFile(filepath.Join(filepath.Dir(path), ".env"), []byte("GATUS_URL=x\nexport GATUS_PASSWORD=y\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Load(path); err == nil || !strings.Contains(err.Error(), ".env, line 2") {
+		t.Errorf("want the line that isn't NAME=value, got %v", err)
+	}
+}
+
 func TestLoadRefuses(t *testing.T) {
 	t.Parallel()
 	for yaml, want := range map[string]string{

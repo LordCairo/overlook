@@ -43,16 +43,16 @@ const boot = 10 * time.Minute
 
 // Config is one UniFi OS console, under sources.unifi in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads the console, such as https://192.168.1.1.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"https://unifi.example.com"`
 	// Key is an API key, from the Network application's Integrations.
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key"`
 	// CA is a PEM file of the console's certificate, which signs itself,
 	// when the system doesn't trust it, and ServerName the name it is for,
 	// unifi.local for a console's own, when URL reaches it by its address.
-	CA         string `yaml:"ca"`
-	ServerName string `yaml:"server_name"`
+	CA         string `yaml:"ca" setup:"text,optional" example:"/etc/overlook/unifi.pem"`
+	ServerName string `yaml:"server_name" setup:"text,optional" example:"unifi.local"`
 	// Link is where the page sends the owner to update or adopt a device,
 	// if not URL, such as the console's page on unifi.ui.com.
 	Link string `yaml:"link"`

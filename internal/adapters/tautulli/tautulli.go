@@ -31,11 +31,11 @@ var reads = []string{"get_activity", "server_status", "get_libraries", "get_hist
 
 // Config is one Tautulli, under sources.tautulli in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Tautulli, such as http://tautulli:8181.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://tautulli.example.com:8181"`
 	// Key is Tautulli's API key, from Settings, Web Interface.
-	Key string `yaml:"key"`
+	Key string `yaml:"key" setup:"key"`
 
 	source fetch.Source
 }

@@ -9,6 +9,8 @@ Overlook holds a key for every source it reads, and some of those keys can do an
 
 A way to break any of these is a vulnerability.
 
+While there is no config, Overlook serves the setup page in place of the page (ADR 0014), and it can be asked to read an address with a key, both typed into it, and say what it found, counted, or why it found nothing. It never sends the key back: the files it hands over are put together in the browser. It refuses a request whose `Origin` isn't its own, so an ordinary website can't ask it through its owner's browser. It knows of one way around that, DNS rebinding, a site pointing its own name at Overlook's address, and accepts it for as long as the config isn't saved: so save it soon, and don't leave a new Overlook without one on a network others share.
+
 ## Checking a release
 
 From v0.2.0 on, GitHub attests every release: a signed record that the binaries and the image were built from this repository by its release workflow, and from which commit. Before you give Overlook your keys, check what you run:

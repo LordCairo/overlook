@@ -25,11 +25,11 @@ const Area = "apps"
 
 // Config is one Nextcloud, under sources.nextcloud in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Nextcloud, such as http://nextcloud.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"https://cloud.example.com"`
 	// Token is serverinfo's own, which reads its answer and nothing else.
-	Token string `yaml:"token"`
+	Token string `yaml:"token" setup:"key"`
 	// Link is where the page sends the owner to update an app, if not URL.
 	Link string `yaml:"link"`
 

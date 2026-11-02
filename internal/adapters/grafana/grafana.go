@@ -25,11 +25,11 @@ const week = 7 * 24 * time.Hour
 
 // Config is one Grafana, under sources.grafana in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Grafana, such as http://grafana:3000.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://grafana.example.com:3000"`
 	// Token is a service account's, with the Viewer role.
-	Token string `yaml:"token"`
+	Token string `yaml:"token" setup:"key"`
 	// Link is where the page sends the owner, if not URL.
 	Link string `yaml:"link"`
 	// Areas maps each folder of alert rules not named like an area to the

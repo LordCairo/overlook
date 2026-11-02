@@ -27,12 +27,12 @@ const low = 20
 
 // Config is one Home Assistant, under sources.homeassistant in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Home Assistant, such as
 	// http://homeassistant:8123.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://homeassistant.example.com:8123"`
 	// Token is a long-lived access token, of a user of Overlook's own.
-	Token string `yaml:"token"`
+	Token string `yaml:"token" setup:"key"`
 	// Link is where the page sends the owner to install an update, if not
 	// URL.
 	Link string `yaml:"link"`

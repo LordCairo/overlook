@@ -1,6 +1,7 @@
 # Overlook's config. Every host here is invented: put your own.
 # A key Overlook doesn't know stops it, and so does a ${VAR} that isn't set
-# in its environment: keep keys and passwords there, not here.
+# in its environment or in the .env beside this file: keep keys and
+# passwords there, not here.
 
 sources:
   # The check engine: its checks, and which of them are problems.

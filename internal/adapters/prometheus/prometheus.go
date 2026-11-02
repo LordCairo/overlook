@@ -29,16 +29,16 @@ const weekStep = 5 * time.Minute
 
 // Config is one Prometheus, under sources.prometheus in overlook.yaml.
 type Config struct {
-	Name string `yaml:"name"`
+	Name string `yaml:"name" setup:"text,optional"`
 	// URL is where Overlook reads Prometheus, such as http://prometheus:9090.
-	URL string `yaml:"url"`
+	URL string `yaml:"url" setup:"text" example:"http://prometheus.example.com:9090"`
 	// Alertmanager is where Overlook reads the Alertmanager Prometheus sends
 	// its alerts to, if it does, such as http://alertmanager:9093.
-	Alertmanager string `yaml:"alertmanager"`
+	Alertmanager string `yaml:"alertmanager" setup:"text,optional" example:"http://alertmanager.example.com:9093"`
 	// User and Password are the login both are read with, if they ask for
 	// one.
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
+	User     string `yaml:"user" setup:"text,optional"`
+	Password string `yaml:"password" setup:"key,optional"`
 	// Link is where the page sends the owner, if not URL.
 	Link string `yaml:"link"`
 	// Areas maps each rule group not named like an area to the area it

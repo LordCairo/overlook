@@ -59,6 +59,9 @@ export function t(key, args = {}) {
   });
 }
 
+/** A message as the English table has it, such as a README heading. */
+export const english = (key) => words.en[key] ?? key;
+
 /** A snapshot's text: a message, or a name as written. */
 export const say = (x) => (x.key ? t(x.key, x.args) : esc(x.name));
 

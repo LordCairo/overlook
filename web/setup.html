@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+  The setup page (CONTEXT.md), served in place of the page while Overlook
+  has no config (ADR 0014): the sources to read, each tried once, and the
+  two files to save. Drawn by js/setup.js, its words from i18n/.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title data-t="setup.title"></title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="setup">
+<main>
+  <section class="status tone-gray">
+    <div class="status-row">
+      <span class="status-icon" id="status-icon"></span>
+      <div class="status-copy"><h1 data-t="setup.title"></h1><p data-t="setup.intro"></p></div>
+    </div>
+  </section>
+
+  <div id="groups"></div>
+
+  <section class="block" id="files" hidden>
+    <h2 class="block-title"><span data-t="setup.files"></span><span class="hint" data-t="setup.files_hint"></span></h2>
+    <div class="card file">
+      <div class="file-head">
+        <code>overlook.yaml</code>
+        <button class="action" type="button" data-copy="yaml"><span data-t="setup.copy"></span></button>
+        <button class="action" type="button" data-save="yaml" data-name="overlook.yaml"><span data-t="setup.download"></span></button>
+      </div>
+      <pre id="yaml"></pre>
+    </div>
+    <div class="card file">
+      <div class="file-head">
+        <code>.env</code>
+        <button class="action" type="button" data-copy="env"><span data-t="setup.copy"></span></button>
+        <button class="action" type="button" data-save="env" data-name=".env"><span data-t="setup.download"></span></button>
+      </div>
+      <p class="file-note" data-t="setup.env_note"></p>
+      <pre id="env"></pre>
+    </div>
+    <p class="restart" data-t="setup.restart"></p>
+    <p class="restart away" id="away" role="status" data-t="setup.away" hidden></p>
+  </section>
+</main>
+<script type="module" src="js/setup.js"></script>
+</body>
+</html>
