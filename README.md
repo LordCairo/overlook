@@ -1149,8 +1149,16 @@ file; [CONTRIBUTING.md](CONTRIBUTING.md#translating) says how.
 
 `v0.4.0` is the newest release, and [the releases](https://github.com/bnlqn/overlook/releases)
 say what each one brought. The road to v0.5 is written from what people
-ask for, and goes here. Until then, the
-[adapters wanted](https://github.com/bnlqn/overlook/issues?q=is%3Aissue%20is%3Aopen%20label%3Aenhancement)
+ask for, so that a homelab's first page takes minutes rather than an
+evening of YAML:
+
+1. [ ] The setup page, in place of the page while there is no config:
+       each source tried once, and the config handed back to save
+       (ADR 0014).
+2. [ ] A template for Unraid's Community Applications, so that Overlook
+       installs from there and opens on its setup page.
+
+The [adapters wanted](https://github.com/bnlqn/overlook/issues?q=is%3Aissue%20is%3Aopen%20label%3Aenhancement)
 are open as issues: if you run one of them, its issue says what an
 adapter for it takes.
 

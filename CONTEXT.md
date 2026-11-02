@@ -88,6 +88,11 @@ a page of its own for each area. The config says which sources fill it,
 never where anything goes.
 _Avoid_: Dashboard, start page, homepage
 
+**Setup page**:
+What Overlook shows in place of the page while it has no config: it asks
+which sources to read, tries each once, and hands back the config to save.
+_Avoid_: Wizard, onboarding, installer
+
 **Area**:
 One of the four fixed parts of a homelab: Servers, Network, Storage and Apps.
 An area with nothing in it isn't shown.
