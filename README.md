@@ -177,9 +177,9 @@ overlook -config /etc/overlook/overlook.yaml -listen :8080
 It reads `.env` beside the config there too, and shows the setup page until
 the config exists.
 
-On Unraid, add `https://github.com/bnlqn/overlook` under Template
-repositories at the foot of the Docker page's Add Container, then pick
-Overlook as the template and apply it. Its config folder is
+On Unraid, install Overlook from the Apps tab, where
+[its listing](https://ca.unraid.net/apps/overlook-0zkg6r11kddp7t) is:
+search for Overlook, and apply its template. Its config folder is
 `/mnt/user/appdata/overlook`, it runs locked down as above, and Unraid
 gives it `TZ` itself. Its WebUI opens the setup page, which says how to
 save the two files on Unraid. To link the Unraid server itself in the
