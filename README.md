@@ -177,9 +177,10 @@ overlook -config /etc/overlook/overlook.yaml -listen :8080
 It reads `.env` beside the config there too, and shows the setup page until
 the config exists.
 
-On Unraid, install Overlook from the Apps tab: search for Overlook, and
-apply its template. Its config folder is `/mnt/user/appdata/overlook`, it
-runs locked down as above, and Unraid gives it `TZ` itself. Its WebUI
+On Unraid, install Overlook from the Apps tab, where
+[its listing](https://ca.unraid.net/apps/overlook-0zkg6r11kddp7t) is:
+search for Overlook, and apply its template. Its config folder is `/mnt/user/appdata/overlook`,
+it runs locked down as above, and Unraid gives it `TZ` itself. Its WebUI
 opens the setup page, which says how to save the two files on Unraid. To
 link the Unraid server itself in the sidebar, as a tool, give it
 `icon: unraid.svg`, which Overlook ships.
